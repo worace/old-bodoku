@@ -21,7 +21,7 @@
   ([] (grid-letters 9)))
 
 (defn cell-labels
-  ([size] (for [col (grid-letters size) row (range 1 (+ 1 size))]
+  ([size] (for [row (range 1 (+ 1 size)) col (grid-letters size)]
              (clojure.string/join "" [col row])))
   ([] (cell-labels 9)))
 
