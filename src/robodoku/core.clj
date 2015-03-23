@@ -5,10 +5,6 @@
   [puzzle]
   (every? (fn [c] (= 1 c)) (map count (vals puzzle))))
 
-(defn contradictory?
-  [puzzle]
-  false)
-
 (defn cols
   [puzzle]
   (let [size (Math/sqrt (count puzzle))]
@@ -33,3 +29,15 @@
          (for [row-group row-groups col-group col-groups]
            (for [row row-group col col-group]
              (str col row))))))
+
+(defn units
+  [puzzle]
+  (apply conj (apply conj (rows puzzle) (cols puzzle)) (boxes puzzle)))
+
+(defn contradictory?
+  [puzzle]
+  (let [grid-size (int (Math/sqrt (count puzzle)))]
+    (not (every? (fn [u]
+                (= (parser/cell-possibilities grid-size) (apply str (sort (vals u)))))
+              (units puzzle)))))
+

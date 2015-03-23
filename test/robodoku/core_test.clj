@@ -11,6 +11,7 @@
 (def tbt-solved (test-puzzle "two_by_two"))
 (def fbf-solved (test-puzzle "four_by_four"))
 (def nbn-solved (test-puzzle "nine_by_nine"))
+(def nbn-cont (test-puzzle "nine_by_nine_contradictory"))
 
 
 (deftest test-checking-puzzle-solvedness
@@ -19,10 +20,11 @@
   (testing "filled in puzzle is solved"
     (is (solved? tbt-solved))))
 
-;(deftest test-checking-puzzle-contradictions
-  ;(testing "a puzzle is contradictory if a value is repeated within a row or col"
-    ;(is (not (contradictory? tbt-solved))))
-  ;)
+(deftest test-checking-puzzle-contradictions
+  (testing "a solved puzzle is not contradictory"
+    (is (not (contradictory? fbf-solved))))
+  (testing "a puzzle is contradictory if a value is repeated within a row or col"
+    (is (contradictory? nbn-cont))))
 
 (deftest test-finding-rows
   (testing "it finds rows of a puzzle"
@@ -42,3 +44,8 @@
   (testing "it finds boxes of 9x9"
     (is (= {"A1" "8" "B1" "2" "C1" "6" "A2" "7" "B2" "1" "C2" "5" "A3" "3" "B3" "9" "C3" "4"}
            (first (boxes nbn-solved) )))))
+
+(deftest test-finding-all-units
+  (testing "it combines rows, boxes, and cols"
+    (is (= 27 (count (units nbn-solved))))
+    (is (every? (fn [unit] (= 9 (count unit))) (units nbn-solved)))))
