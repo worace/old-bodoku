@@ -41,3 +41,15 @@
                 (= (parser/cell-possibilities grid-size) (apply str (sort (vals u)))))
               (units puzzle)))))
 
+(defn peers-map
+  [puzzle]
+  (reduce (fn [peers cell]
+            (assoc peers cell
+                   (remove (fn [peer] (= peer cell))
+                           (distinct
+                             (mapcat keys
+                                     (filter
+                                       (fn [unit] (contains? unit cell))
+                                       (units puzzle)))))))
+          {} (keys puzzle)))
+

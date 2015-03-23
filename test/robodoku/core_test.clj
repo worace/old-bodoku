@@ -49,3 +49,9 @@
   (testing "it combines rows, boxes, and cols"
     (is (= 27 (count (units nbn-solved))))
     (is (every? (fn [unit] (= 9 (count unit))) (units nbn-solved)))))
+
+(deftest test-finding-peers-of-a-cell
+  (testing "it finds peers for A4 in 9x9"
+    (is (= (sort ["A1" "A2" "A3" "A5" "A6" "A7" "A8" "A9"
+              "B4" "C4" "D4" "E4" "F4" "G4" "H4" "I4"
+              "B5" "C5" "B6" "C6"]) (sort (get (peers-map nbn-solved) "A4"))))))
