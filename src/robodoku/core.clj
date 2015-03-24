@@ -121,8 +121,24 @@
 (defn unsolved-cells [puzzle]
   (filter (fn [kv] (> (count (last kv)) 1)) puzzle))
 
-(defn min-possiblities-cell [puzzle]
+(defn min-possibilities-cell [puzzle]
   (first (first (sort-by (fn [kv] (count (last kv)) ) (unsolved-cells puzzle)))))
+
+(defn search [puzzle]
+  (if (= false puzzle)
+    false
+    (if (and (solved? puzzle) (not (contradictory? puzzle)))
+      puzzle
+      (let [next-cell (min-possibilities-cell puzzle)]
+        (some (fn [possibility]
+                (search (assign puzzle next-cell possibility)))
+              (map str (seq (get puzzle next-cell)))) ))))
+
+(defn display-row [row]
+  (clojure.string/join "" (map last (sort-by (fn [kv] (first kv)) row))))
+
+(defn display [puzzle]
+  (println (clojure.string/join "\n" (map display-row (rows puzzle)))))
 
 
 

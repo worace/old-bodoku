@@ -13,6 +13,8 @@
 (def fbf-hard (test-puzzle "four_by_four_hard"))
 (def fbf-solved (test-puzzle "four_by_four"))
 (def nbn-solved (test-puzzle "nine_by_nine"))
+(def nbn-hard (test-puzzle "nine_by_nine_hard"))
+(def nbn-unsolved (test-puzzle "nine_by_nine_unsolved"))
 (def nbn-cont (test-puzzle "nine_by_nine_contradictory"))
 
 
@@ -82,14 +84,19 @@
   (testing "finds cells with more than 1 remaining possibilities"
     (is (= ["C4" "B4"]) (unsolved-cells fbf-unsolved))))
 
-(println "*****************")
-(println (unsolved-cells fbf-unsolved ))
 (deftest test-finding-minimum-possibilities-cell
   (testing "it finds the unsolved cell which has fewest remaining possibilities"
-    (is (contains? (set ["D2" "B4"]) (min-possiblities-cell fbf-unsolved)))))
+    (is (contains? (set ["D2" "B4"]) (min-possibilities-cell fbf-unsolved)))))
 
-(deftest test-solving-a-puzzle
-  (testing "solve recursively searches for a solution until it finds one"))
+(do
+  (println "************ START TO SOLVE *********")
+  (deftest test-solving-a-puzzle
+    (testing "solve recursively searches for a solution until it finds one"
+      (let [solution (search fbf-unsolved)]
+        (is (and (solved? solution) (not (contradictory? solution))))))) )
+
+(println "******* PRINT SOLVED PUZZLE **********")
+(display (search (constrain nbn-hard)))
 
 ;3241
 ;4132
