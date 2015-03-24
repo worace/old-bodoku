@@ -10,6 +10,7 @@
 (def tbt-with-blank (test-puzzle "two_by_two_with_blank"))
 (def tbt-solved (test-puzzle "two_by_two"))
 (def fbf-unsolved (test-puzzle "four_by_four_with_blank"))
+(def fbf-hard (test-puzzle "four_by_four_hard"))
 (def fbf-solved (test-puzzle "four_by_four"))
 (def nbn-solved (test-puzzle "nine_by_nine"))
 (def nbn-cont (test-puzzle "nine_by_nine_contradictory"))
@@ -56,6 +57,10 @@
     (is (= (sort ["A1" "A2" "A3" "A5" "A6" "A7" "A8" "A9"
               "B4" "C4" "D4" "E4" "F4" "G4" "H4" "I4"
               "B5" "C5" "B6" "C6"]) (sort (get (peers-map nbn-solved) "A4"))))))
+
+(deftest test-setting-up-initial-constraints
+  (testing "it takes a parsed puzzle and propagates initial constraints"
+    (is (= "34" (get (constrain fbf-hard) "A1")))))
 
 (deftest test-assigning-a-value-to-a-cell
   (testing "it returns a new map with the value filled in"

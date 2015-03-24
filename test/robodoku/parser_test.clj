@@ -37,3 +37,7 @@
     (is (= {"A1" "12" "A2" "2" "B1" "2" "B2" "1"} (parse-puzzle "two_by_two_with_blank.txt"))))
   (testing "parses solved 4x4"
     (is (= {"A1" "3" "B1" "2" "C1" "4" "D1" "1"} (select-keys (parse-puzzle "four_by_four.txt") ["A1" "B1" "C1" "D1"])))))
+
+(deftest test-generating-empty-puzzle
+  (testing "it gives a puzzle with appropriate keys and no constraints for any cells"
+    (is (= {"A1" "12" "A2" "12" "B1" "12" "B2" "12"} (empty-puzzle 2)))))

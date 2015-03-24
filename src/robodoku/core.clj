@@ -70,7 +70,7 @@
   ; else return false (elimination failed)
 (defn eliminate
   [puzzle cell value]
-  (println (str "attempt to elim val " value " from cell " cell))
+  (println (str "attempt to elim val " value " from cell " cell " which currently has " (get puzzle cell)))
   (if (not (.contains (get puzzle cell) value))
     ;value is not an option for cell (already eliminated); return existing puzzle
     ;(println (str "did not find value " value " in values for cell " cell ": " (get puzzle cell)))
@@ -82,10 +82,10 @@
           ;1 remaining poss must be solution; elim it from all peers
           (do (println (str "down to 1 value: " new-cell-value " for cell: " cell " need to remove it from peers: " (get (peers-map puzzle) cell)))
               (loop [peers (get (peers-map puzzle) cell)
-                     puzzle puzzle]
+                     puzzle (assoc puzzle cell new-cell-value)]
                 (if (empty? peers)
                   (do (println "reached end of peers list; will return puzzle with new val assigned")
-                      (assoc puzzle cell new-cell-value))
+                      puzzle)
                   (let [next-iter (eliminate puzzle (first peers) new-cell-value)]
                     (if next-iter
                       (do (println "elimination succeeded, will recur")
@@ -104,6 +104,22 @@
       (if puzzle
         (recur (rest values-to-elim) (eliminate puzzle cell (first values-to-elim)))
         false))))
+
+(defn constrain [puzzle-with-values]
+  (println (str "need to fill constraints in puzzle: " puzzle-with-values))
+  (println (str "Will copy into empty puzzle: " (parser/empty-puzzle (puzzle-size puzzle-with-values))))
+  (loop [cells (keys puzzle-with-values)
+         puzzle (parser/empty-puzzle (puzzle-size puzzle-with-values))]
+    (if (empty? cells)
+      puzzle
+      (let [cell (first cells)
+            value (get puzzle-with-values cell)]
+        (if (= 1 (count value))
+          (recur (rest cells) (assign puzzle cell value))
+          (recur (rest cells) puzzle))))))
+
+
+
 
 
 ;Assigning values to cells

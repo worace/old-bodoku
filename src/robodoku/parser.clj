@@ -37,3 +37,6 @@
   (let [cell-values (read-puzzle (puzzle-file filename))
         size (int (Math/sqrt (count cell-values)))]
     (zipmap (cell-labels size) (fill-cells-with-possibilities cell-values size))))
+
+(defn empty-puzzle [size]
+  (zipmap (cell-labels size) (iterate (fn [i] (cell-possibilities size)) (cell-possibilities size))))
