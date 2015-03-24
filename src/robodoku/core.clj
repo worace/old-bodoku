@@ -70,7 +70,7 @@
   ; else return false (elimination failed)
 (defn eliminate
   [puzzle cell value]
-  (println (str "attempt to elim val " value " from cell " cell " which currently has " (get puzzle cell)))
+  ;(println (str "attempt to elim val " value " from cell " cell " which currently has " (get puzzle cell)))
   (if (not (.contains (get puzzle cell) value))
     ;value is not an option for cell (already eliminated); return existing puzzle
     ;(println (str "did not find value " value " in values for cell " cell ": " (get puzzle cell)))
@@ -80,23 +80,19 @@
         false ;no remaining possibilities - introduced contradiction - return false
         (if (= 1 (count new-cell-value))
           ;1 remaining poss must be solution; elim it from all peers
-          (do (println (str "down to 1 value: " new-cell-value " for cell: " cell " need to remove it from peers: " (get (peers-map puzzle) cell)))
-              (loop [peers (get (peers-map puzzle) cell)
-                     puzzle (assoc puzzle cell new-cell-value)]
-                (if (empty? peers)
-                  (do (println "reached end of peers list; will return puzzle with new val assigned")
-                      puzzle)
-                  (let [next-iter (eliminate puzzle (first peers) new-cell-value)]
-                    (if next-iter
-                      (do (println "elimination succeeded, will recur")
-                          (recur (rest peers) next-iter))
-                      (do (println "next iter failed; return false")
-                          false ))))))
+          (loop [peers (get (peers-map puzzle) cell)
+                 puzzle (assoc puzzle cell new-cell-value)]
+            (if (empty? peers)
+              puzzle
+              (let [next-iter (eliminate puzzle (first peers) new-cell-value)]
+                (if next-iter
+                  (recur (rest peers) next-iter)
+                  false))))
           (assoc puzzle cell new-cell-value))))))
 
 (defn assign
   [puzzle cell value]
-  (println (str "assign val " value " to cell " cell " currently has possibilities " (get puzzle cell)))
+  ;(println (str "assign val " value " to cell " cell " currently has possibilities " (get puzzle cell)))
   (loop [values-to-elim (remove #(= % value) (puzzle-possibilities puzzle))
          puzzle puzzle]
     (if (empty? values-to-elim)
@@ -106,8 +102,8 @@
         false))))
 
 (defn constrain [puzzle-with-values]
-  (println (str "need to fill constraints in puzzle: " puzzle-with-values))
-  (println (str "Will copy into empty puzzle: " (parser/empty-puzzle (puzzle-size puzzle-with-values))))
+  ;(println (str "need to fill constraints in puzzle: " puzzle-with-values))
+  ;(println (str "Will copy into empty puzzle: " (parser/empty-puzzle (puzzle-size puzzle-with-values))))
   (loop [cells (keys puzzle-with-values)
          puzzle (parser/empty-puzzle (puzzle-size puzzle-with-values))]
     (if (empty? cells)

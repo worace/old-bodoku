@@ -1,7 +1,8 @@
 (ns robodoku.core-test
   (:require [clojure.test :refer :all]
             [robodoku.core :refer :all]
-            [robodoku.parser :as parser]))
+            [robodoku.parser :as parser]
+            [clojure.java.io :as io]))
 
 (defn test-puzzle
   [puzz-name]
@@ -97,6 +98,13 @@
 
 (println "******* PRINT SOLVED PUZZLE **********")
 (display (search (constrain nbn-hard)))
+
+(defn sample-puzzles []
+  (filter #(.endsWith (.getName %) ".txt") (file-seq (io/file "resources/samples"))))
+
+(map (fn [filename]
+       (display (search (constrain (parser/parse-puzzle filename)))))
+     (sample-puzzles))
 
 ;3241
 ;4132
