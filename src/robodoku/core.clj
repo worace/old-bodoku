@@ -118,6 +118,12 @@
           (recur (rest cells) (assign puzzle cell value))
           (recur (rest cells) puzzle))))))
 
+(defn unsolved-cells [puzzle]
+  (filter (fn [kv] (> (count (last kv)) 1)) puzzle))
+
+(defn min-possiblities-cell [puzzle]
+  (first (first (sort-by (fn [kv] (count (last kv)) ) (unsolved-cells puzzle)))))
+
 
 
 

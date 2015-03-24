@@ -74,12 +74,23 @@
       (is (= false (eliminate constrained "B4" "3")))));3 is solution for B4; eliminating it should fail
   )
 
-
 (deftest test-eliminating-already-eliminated-val
   (testing "eliminate returns existing puzzle if value is not a possibility for cell"
     (is (= fbf-solved (eliminate fbf-solved "A1" "2")))))
 
-(deftest test-eliminating-returns-false-for-contradiction)
+(deftest finding-unsolved-cells
+  (testing "finds cells with more than 1 remaining possibilities"
+    (is (= ["C4" "B4"]) (unsolved-cells fbf-unsolved))))
+
+(println "*****************")
+(println (unsolved-cells fbf-unsolved ))
+(deftest test-finding-minimum-possibilities-cell
+  (testing "it finds the unsolved cell which has fewest remaining possibilities"
+    (is (contains? (set ["D2" "B4"]) (min-possiblities-cell fbf-unsolved)))))
+
+(deftest test-solving-a-puzzle
+  (testing "solve recursively searches for a solution until it finds one"))
+
 ;3241
 ;4132
 ;1423
