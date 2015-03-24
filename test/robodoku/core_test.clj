@@ -9,6 +9,7 @@
 
 (def tbt-with-blank (test-puzzle "two_by_two_with_blank"))
 (def tbt-solved (test-puzzle "two_by_two"))
+(def fbf-unsolved (test-puzzle "four_by_four_with_blank"))
 (def fbf-solved (test-puzzle "four_by_four"))
 (def nbn-solved (test-puzzle "nine_by_nine"))
 (def nbn-cont (test-puzzle "nine_by_nine_contradictory"))
@@ -55,3 +56,26 @@
     (is (= (sort ["A1" "A2" "A3" "A5" "A6" "A7" "A8" "A9"
               "B4" "C4" "D4" "E4" "F4" "G4" "H4" "I4"
               "B5" "C5" "B6" "C6"]) (sort (get (peers-map nbn-solved) "A4"))))))
+
+(deftest test-assigning-a-value-to-a-cell
+  (testing "it returns a new map with the value filled in"
+    (is (= "3" (get (assign fbf-unsolved "B4" "3") "B4")))))
+
+(deftest test-elimination-contradictions
+  (testing "eliminate returns false if last value is eliminated"
+    (is (= false (eliminate fbf-solved "A1" "3"))))
+  (let [constrained (assoc (assoc fbf-unsolved "B4" "13") "C4" "13")]
+    (testing "eliminate returns false if we introduce contradiction for peer"
+      (is (= false (eliminate constrained "B4" "3")))));3 is solution for B4; eliminating it should fail
+  )
+
+
+(deftest test-eliminating-already-eliminated-val
+  (testing "eliminate returns existing puzzle if value is not a possibility for cell"
+    (is (= fbf-solved (eliminate fbf-solved "A1" "2")))))
+
+(deftest test-eliminating-returns-false-for-contradiction)
+;3241
+;4132
+;1423
+;2 14 -> B4 blank; should be 3
