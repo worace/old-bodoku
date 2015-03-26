@@ -69,7 +69,7 @@
   ; if those are all successful - return new puzzle
   ; else return false (elimination failed)
 (defn eliminate
-  [puzzle cell value]
+  [puzzle peers-map cell value]
   ;(println (str "attempt to elim val " value " from cell " cell " which currently has " (get puzzle cell)))
   (if (not (.contains (get puzzle cell) value))
     ;value is not an option for cell (already eliminated); return existing puzzle
@@ -80,39 +80,40 @@
         false ;no remaining possibilities - introduced contradiction - return false
         (if (= 1 (count new-cell-value))
           ;1 remaining poss must be solution; elim it from all peers
-          (loop [peers (get (peers-map puzzle) cell)
+          (loop [peers (get peers-map cell)
                  puzzle (assoc puzzle cell new-cell-value)]
             (if (empty? peers)
               puzzle
-              (let [next-iter (eliminate puzzle (first peers) new-cell-value)]
+              (let [next-iter (eliminate puzzle peers-map (first peers) new-cell-value)]
                 (if next-iter
                   (recur (rest peers) next-iter)
                   false))))
           (assoc puzzle cell new-cell-value))))))
 
 (defn assign
-  [puzzle cell value]
+  [puzzle peers-map cell value]
   ;(println (str "assign val " value " to cell " cell " currently has possibilities " (get puzzle cell)))
   (loop [values-to-elim (remove #(= % value) (puzzle-possibilities puzzle))
          puzzle puzzle]
     (if (empty? values-to-elim)
       puzzle
       (if puzzle
-        (recur (rest values-to-elim) (eliminate puzzle cell (first values-to-elim)))
+        (recur (rest values-to-elim) (eliminate puzzle peers-map cell (first values-to-elim)))
         false))))
 
 (defn constrain [puzzle-with-values]
   ;(println (str "need to fill constraints in puzzle: " puzzle-with-values))
   ;(println (str "Will copy into empty puzzle: " (parser/empty-puzzle (puzzle-size puzzle-with-values))))
-  (loop [cells (keys puzzle-with-values)
-         puzzle (parser/empty-puzzle (puzzle-size puzzle-with-values))]
-    (if (empty? cells)
-      puzzle
-      (let [cell (first cells)
-            value (get puzzle-with-values cell)]
-        (if (= 1 (count value))
-          (recur (rest cells) (assign puzzle cell value))
-          (recur (rest cells) puzzle))))))
+  (let [peers-map (peers-map puzzle-with-values)]
+    (loop [cells (keys puzzle-with-values)
+           puzzle (parser/empty-puzzle (puzzle-size puzzle-with-values))]
+      (if (empty? cells)
+        puzzle
+        (let [cell (first cells)
+              value (get puzzle-with-values cell)]
+          (if (= 1 (count value))
+            (recur (rest cells) (assign puzzle peers-map cell value))
+            (recur (rest cells) puzzle))))) ))
 
 (defn unsolved-cells [puzzle]
   (filter (fn [kv] (> (count (last kv)) 1)) puzzle))
@@ -120,14 +121,14 @@
 (defn min-possibilities-cell [puzzle]
   (first (first (sort-by (fn [kv] (count (last kv)) ) (unsolved-cells puzzle)))))
 
-(defn search [puzzle]
+(defn search [puzzle peers]
   (if (= false puzzle)
     false
     (if (and (solved? puzzle) (not (contradictory? puzzle)))
       puzzle
       (let [next-cell (min-possibilities-cell puzzle)]
         (some (fn [possibility]
-                (search (assign puzzle next-cell possibility)))
+                (search (assign puzzle peers next-cell possibility) peers))
               (map str (seq (get puzzle next-cell)))) ))))
 
 (defn display-row [row]

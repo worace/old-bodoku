@@ -67,19 +67,19 @@
 
 (deftest test-assigning-a-value-to-a-cell
   (testing "it returns a new map with the value filled in"
-    (is (= "3" (get (assign fbf-unsolved "B4" "3") "B4")))))
+    (is (= "3" (get (assign fbf-unsolved (peers-map fbf-unsolved) "B4" "3") "B4")))))
 
 (deftest test-elimination-contradictions
   (testing "eliminate returns false if last value is eliminated"
-    (is (= false (eliminate fbf-solved "A1" "3"))))
+    (is (= false (eliminate fbf-solved (peers-map fbf-unsolved) "A1" "3"))))
   (let [constrained (assoc (assoc fbf-unsolved "B4" "13") "C4" "13")]
     (testing "eliminate returns false if we introduce contradiction for peer"
-      (is (= false (eliminate constrained "B4" "3")))));3 is solution for B4; eliminating it should fail
+      (is (= false (eliminate constrained (peers-map fbf-unsolved) "B4" "3")))));3 is solution for B4; eliminating it should fail
   )
 
 (deftest test-eliminating-already-eliminated-val
   (testing "eliminate returns existing puzzle if value is not a possibility for cell"
-    (is (= fbf-solved (eliminate fbf-solved "A1" "2")))))
+    (is (= fbf-solved (eliminate fbf-solved (peers-map fbf-solved) "A1" "2")))))
 
 (deftest finding-unsolved-cells
   (testing "finds cells with more than 1 remaining possibilities"
@@ -91,7 +91,7 @@
 
 (deftest test-solving-a-puzzle
   (testing "solve recursively searches for a solution until it finds one"
-    (let [solution (search fbf-unsolved)]
+    (let [solution (search fbf-unsolved (peers-map fbf-unsolved))]
       (is (and (solved? solution) (not (contradictory? solution)))))))
 
 ;(println "******* PRINT SOLVED PUZZLE **********")
@@ -100,7 +100,8 @@
 (defn sample-puzzles []
   (map #(.getName %) (filter #(.startsWith (.getName %) "puzzle_") (file-seq (io/file (io/resource "puzzles"))) ) ))
 
-;(doseq [puzz (sample-puzzles)]
-  ;(do
-    ;(println (str "\n\n*****Solving " puzz " ******\n\n"))
-    ;(println (display (search (constrain (parser/parse-puzzle puzz)))))))
+(doseq [puzz (sample-puzzles)]
+  (do
+    (println (str "\n\n*****Solving " puzz " ******\n\n"))
+    (let [puzzle (constrain (parser/parse-puzzle puzz))]
+      (println (display (search puzzle (peers-map puzzle)))) )))
