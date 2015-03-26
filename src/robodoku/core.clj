@@ -134,7 +134,7 @@
   (clojure.string/join "" (map last (sort-by (fn [kv] (first kv)) row))))
 
 (defn display [puzzle]
-  (println (clojure.string/join "\n" (map display-row (rows puzzle)))))
+  (clojure.string/join "\n" (map display-row (rows puzzle))))
 
 
 

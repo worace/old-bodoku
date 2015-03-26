@@ -89,24 +89,18 @@
   (testing "it finds the unsolved cell which has fewest remaining possibilities"
     (is (contains? (set ["D2" "B4"]) (min-possibilities-cell fbf-unsolved)))))
 
-(do
-  (println "************ START TO SOLVE *********")
-  (deftest test-solving-a-puzzle
-    (testing "solve recursively searches for a solution until it finds one"
-      (let [solution (search fbf-unsolved)]
-        (is (and (solved? solution) (not (contradictory? solution))))))) )
+(deftest test-solving-a-puzzle
+  (testing "solve recursively searches for a solution until it finds one"
+    (let [solution (search fbf-unsolved)]
+      (is (and (solved? solution) (not (contradictory? solution)))))))
 
-(println "******* PRINT SOLVED PUZZLE **********")
-(display (search (constrain nbn-hard)))
+;(println "******* PRINT SOLVED PUZZLE **********")
+;(display (search (constrain nbn-hard)))
 
 (defn sample-puzzles []
-  (filter #(.endsWith (.getName %) ".txt") (file-seq (io/file "resources/samples"))))
+  (map #(.getName %) (filter #(.startsWith (.getName %) "puzzle_") (file-seq (io/file (io/resource "puzzles"))) ) ))
 
-(map (fn [filename]
-       (display (search (constrain (parser/parse-puzzle filename)))))
-     (sample-puzzles))
-
-;3241
-;4132
-;1423
-;2 14 -> B4 blank; should be 3
+;(doseq [puzz (sample-puzzles)]
+  ;(do
+    ;(println (str "\n\n*****Solving " puzz " ******\n\n"))
+    ;(println (display (search (constrain (parser/parse-puzzle puzz)))))))
