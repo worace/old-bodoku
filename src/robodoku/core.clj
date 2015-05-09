@@ -113,7 +113,7 @@
               value (get puzzle-with-values cell)]
           (if (= 1 (count value))
             (recur (rest cells) (assign puzzle peers-map cell value))
-            (recur (rest cells) puzzle))))) ))
+            (recur (rest cells) puzzle)))))))
 
 (defn unsolved-cells [puzzle]
   (filter (fn [kv] (> (count (last kv)) 1)) puzzle))

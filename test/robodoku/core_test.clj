@@ -104,4 +104,4 @@
   (do
     (println (str "\n\n*****Solving " puzz " ******\n\n"))
     (let [puzzle (constrain (parser/parse-puzzle puzz))]
-      (println (display (search puzzle (peers-map puzzle)))) )))
+      (time (println (display (search puzzle (peers-map puzzle)))) ))))
